@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2024-10-20-create-table-bouquet" author="k.a.polshchikov">
+        <createTable tableName="bouquet">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(64)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="bouquet-name-unique"/>
+            </column>
+            <column name="description" type="varchar(256)"/>
+            <column name="price" type="int"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2024-10-21-drop-column-description" author="k.a.polshchikov">
+        <dropColumn tableName="bouquet">
+            <column name="description"/>
+        </dropColumn>
+    </changeSet>
+
+    <changeSet id="2024-10-21-create-table-component" author="k.a.polshchikov">
+        <createTable tableName="component">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(64)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="component-name-unique"/>
+            </column>
+            <column name="count" type="int"/>
+            <column name="bouquet_id" type="bigint"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

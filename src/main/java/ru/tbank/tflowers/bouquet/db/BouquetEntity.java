@@ -1,10 +1,16 @@
 package ru.tbank.tflowers.bouquet.db;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import ru.tbank.tflowers.component.db.ComponentEntity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -13,8 +19,10 @@ public class BouquetEntity implements Serializable {
     @Id
     private Long id;
     private String name;
-    private String description;
     private Integer price;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "bouquet")
+    private List<ComponentEntity> components = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -34,15 +42,6 @@ public class BouquetEntity implements Serializable {
         return this;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public BouquetEntity setDescription(String description) {
-        this.description = description;
-        return this;
-    }
-
     public Integer getPrice() {
         return price;
     }
@@ -50,6 +49,25 @@ public class BouquetEntity implements Serializable {
     public BouquetEntity setPrice(Integer price) {
         this.price = price;
         return this;
+    }
+
+    public List<ComponentEntity> getComponents() {
+        return components;
+    }
+
+    public BouquetEntity setComponents(List<ComponentEntity> components) {
+        this.components = components;
+        return this;
+    }
+
+    public void addComponent(ComponentEntity component) {
+        components.add(component);
+        component.setBouquet(this);
+    }
+
+    public void removeComponent(ComponentEntity component) {
+        components.remove(component);
+        component.setBouquet(null);
     }
 
     @Override

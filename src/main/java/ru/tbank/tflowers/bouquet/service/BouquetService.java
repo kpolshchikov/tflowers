@@ -1,25 +1,32 @@
 package ru.tbank.tflowers.bouquet.service;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import ru.tbank.tflowers.bouquet.db.BouquetEntity;
-import ru.tbank.tflowers.bouquet.db.BouquetRepository;
+import ru.tbank.tflowers.bouquet.Bouquet;
 
 import java.util.List;
-
-import static ru.tbank.tflowers.config.RedisCacheConfig.BOUQUET_CACHE;
 
 @Service
 public class BouquetService {
 
-    private final BouquetRepository bouquetRepository;
+    private final BouquetCacheService bouquetCacheService;
 
-    public BouquetService(BouquetRepository bouquetRepository) {
-        this.bouquetRepository = bouquetRepository;
+    public BouquetService(BouquetCacheService bouquetCacheService) {
+        this.bouquetCacheService = bouquetCacheService;
     }
 
-    @Cacheable(cacheManager = "redisCacheManager", cacheNames = BOUQUET_CACHE)
-    public List<BouquetEntity> getBouquets() {
-        return bouquetRepository.findAll();
+    public List<Bouquet> getBouquets() {
+        return bouquetCacheService.getBouquets().stream().map(bouquetEntity -> {
+                    StringBuilder description = new StringBuilder("В состав этого букета входит:\n");
+                    bouquetEntity.getComponents().forEach(component ->
+                            description.append(
+                                    String.format("  - %s x %d;%n", component.getName(), component.getCount()))
+                    );
+                    return new Bouquet(
+                            bouquetEntity.getName(),
+                            description.toString(),
+                            bouquetEntity.getPrice()
+                    );
+                }
+        ).toList();
     }
 }

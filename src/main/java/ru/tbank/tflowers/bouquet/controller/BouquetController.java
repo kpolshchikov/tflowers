@@ -20,12 +20,6 @@ public class BouquetController {
 
     @GetMapping
     public List<Bouquet> getBouquets() {
-        return bouquetService.getBouquets().stream()
-                .map(bouquetEntity -> new Bouquet(
-                        bouquetEntity.getName(),
-                        bouquetEntity.getDescription(),
-                        bouquetEntity.getPrice()
-                ))
-                .toList();
+        return bouquetService.getBouquets();
     }
 }

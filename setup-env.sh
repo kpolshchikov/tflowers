@@ -9,7 +9,7 @@ docker ps -a -f name=tflowers-postgres
 sleep 5
 
 echo "INFO Накатка миграций"
-liquibase --defaults-file=./liquibase/liquibase.properties update
+liquibase --defaults-file=./liquibase.properties update
 
 echo "INFO Удаление контейнера tflowers-redis, если существует"
 docker stop tflowers-redis || true && docker rm tflowers-redis || true
