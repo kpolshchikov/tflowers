@@ -127,12 +127,15 @@ class BouquetControllerTest {
     @Test
     void cacheTest() throws Exception {
         // act
+        System.out.println("-----------------------------------------------------------------------");
         String firstRequestBody = mockMvc.perform(MockMvcRequestBuilders.get("/bouquets"))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+        System.out.println("-----------------------------------------------------------------------");
         String secondRequestBody = mockMvc.perform(MockMvcRequestBuilders.get("/bouquets"))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+        System.out.println("-----------------------------------------------------------------------");
         // assert
         assertThat(firstRequestBody)
                 .isEqualTo(secondRequestBody)

@@ -21,7 +21,7 @@ public class BouquetEntity implements Serializable {
     private String name;
     private Integer price;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "bouquet")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "bouquet", fetch = FetchType.EAGER)
     private List<ComponentEntity> components = new ArrayList<>();
 
     public Long getId() {
