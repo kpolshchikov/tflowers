@@ -23,6 +23,7 @@ import ru.tbank.tflowers.store.db.StoreEntity;
 import ru.tbank.tflowers.store.db.StoreRepository;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -106,7 +107,8 @@ class BouquetControllerTest {
         BouquetEntity blueLaguna = new BouquetEntity()
                 .setId(1L)
                 .setName("Голубая лагуна")
-                .setPrice(3500);
+                .setPrice(3500)
+                .setLastUpdated(LocalDateTime.now());
         blueLagunaComponents.forEach(blueLaguna::addComponent);
         blueLagunaStores.forEach(blueLaguna::addStore);
 
@@ -127,7 +129,8 @@ class BouquetControllerTest {
         BouquetEntity redLaguna = new BouquetEntity()
                 .setId(2L)
                 .setName("Красная лагуна")
-                .setPrice(3550);
+                .setPrice(3550)
+                .setLastUpdated(LocalDateTime.now().minusDays(1));
         redLagunaComponents.forEach(redLaguna::addComponent);
 
         bouquetRepository.saveAll(List.of(blueLaguna, redLaguna));
@@ -147,12 +150,8 @@ class BouquetControllerTest {
                 .isEqualTo("[{\"name\":\"Голубая лагуна\",\"description\":\"В состав этого букета входит:"
                         + "\\n  - Голубая хризантема x 11;"
                         + "\\n  - Голубая упаковка x 2;"
-                        + "\\n  - Голубая лента x 1;\\n\",\"price\":3500},"
-                        + "{\"name\":\"Красная лагуна\",\"description\":\"В состав этого букета входит:"
-                        + "\\n  - Красная роза x 11;"
-                        + "\\n  - Красная упаковка x 2;"
-                        + "\\n  - Красная лента x 1;\\n\",\"price\":3550}]");
-        verify(bouquetCacheService, Mockito.times(1)).getBouquets();
+                        + "\\n  - Голубая лента x 1;\\n\",\"price\":3500}]");
+        verify(bouquetCacheService, Mockito.times(1)).getBouquetsForToday();
     }
 
     @Test
@@ -180,7 +179,8 @@ class BouquetControllerTest {
         BouquetEntity blueLaguna = new BouquetEntity()
                 .setId(1L)
                 .setName("Голубая лагуна")
-                .setPrice(3500);
+                .setPrice(3500)
+                .setLastUpdated(LocalDateTime.now());
         blueLagunaComponents.forEach(blueLaguna::addComponent);
         blueLagunaStores.forEach(blueLaguna::addStore);
         bouquetRepository.save(blueLaguna);

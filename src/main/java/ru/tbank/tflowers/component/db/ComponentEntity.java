@@ -9,7 +9,6 @@ import jakarta.persistence.Table;
 import ru.tbank.tflowers.bouquet.db.BouquetEntity;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity

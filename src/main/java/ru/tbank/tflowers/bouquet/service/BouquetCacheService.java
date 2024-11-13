@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.tbank.tflowers.bouquet.db.BouquetEntity;
 import ru.tbank.tflowers.bouquet.db.BouquetRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static ru.tbank.tflowers.config.RedisCacheConfig.BOUQUET_CACHE;
@@ -19,7 +20,9 @@ public class BouquetCacheService {
     }
 
     @Cacheable(cacheManager = "redisCacheManager", cacheNames = BOUQUET_CACHE)
-    public List<BouquetEntity> getBouquets() {
-        return bouquetRepository.findAll();
+    public List<BouquetEntity> getBouquetsForToday() {
+        return bouquetRepository.findAll().stream()
+                .filter(it -> it.getLastUpdated().equals(LocalDateTime.now()))
+                .toList();
     }
 }

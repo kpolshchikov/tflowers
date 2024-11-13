@@ -20,7 +20,7 @@ public class BouquetService {
     }
 
     public List<Bouquet> getBouquets() {
-        return bouquetCacheService.getBouquets().stream().map(bouquetEntity -> {
+        return bouquetCacheService.getBouquetsForToday().stream().map(bouquetEntity -> {
                     StringBuilder description = new StringBuilder("В состав этого букета входит:\n");
                     bouquetEntity.getComponents().forEach(component ->
                             description.append(

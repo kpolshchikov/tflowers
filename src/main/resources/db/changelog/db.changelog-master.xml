@@ -46,4 +46,10 @@
             <column name="bouquet_id" type="bigint"/>
         </createTable>
     </changeSet>
+
+    <changeSet id="2024-11-13-add-column-last_updated" author="k.a.polshchikov">
+        <addColumn tableName="bouquet">
+            <column name="last_updated" type="timestamp"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
