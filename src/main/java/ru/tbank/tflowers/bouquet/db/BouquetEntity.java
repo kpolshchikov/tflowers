@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import ru.tbank.tflowers.component.db.ComponentEntity;
+import ru.tbank.tflowers.store.db.StoreEntity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -23,6 +24,9 @@ public class BouquetEntity implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "bouquet", fetch = FetchType.EAGER)
     private List<ComponentEntity> components = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "bouquet")
+    private List<StoreEntity> stores = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -68,6 +72,25 @@ public class BouquetEntity implements Serializable {
     public void removeComponent(ComponentEntity component) {
         components.remove(component);
         component.setBouquet(null);
+    }
+
+    public List<StoreEntity> getStores() {
+        return stores;
+    }
+
+    public BouquetEntity setStores(List<StoreEntity> stores) {
+        this.stores = stores;
+        return this;
+    }
+
+    public void addStore(StoreEntity store) {
+        stores.add(store);
+        store.setBouquet(this);
+    }
+
+    public void removeComponent(StoreEntity store) {
+        stores.remove(store);
+        store.setBouquet(null);
     }
 
     @Override

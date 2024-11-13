@@ -1,6 +1,7 @@
 package ru.tbank.tflowers.bouquet.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.tbank.tflowers.bouquet.Bouquet;
@@ -21,5 +22,10 @@ public class BouquetController {
     @GetMapping
     public List<Bouquet> getBouquets() {
         return bouquetService.getBouquets();
+    }
+
+    @GetMapping("/stores/{bouquet_id}")
+    public List<String> getStores(@PathVariable("bouquet_id") Long bouquetId) {
+        return bouquetService.getStores(bouquetId);
     }
 }

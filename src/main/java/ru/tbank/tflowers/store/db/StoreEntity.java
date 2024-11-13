@@ -1,6 +1,5 @@
-package ru.tbank.tflowers.component.db;
+package ru.tbank.tflowers.store.db;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -9,17 +8,14 @@ import jakarta.persistence.Table;
 import ru.tbank.tflowers.bouquet.db.BouquetEntity;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "component")
-public class ComponentEntity implements Serializable {
+@Table(name = "store")
+public class StoreEntity implements Serializable {
     @Id
-    @Column(name = "id", nullable = false)
     private Long id;
-    private String name;
-    private Integer count;
+    private String address;
     @ManyToOne
     @JoinColumn(name = "bouquet_id")
     private BouquetEntity bouquet;
@@ -28,26 +24,17 @@ public class ComponentEntity implements Serializable {
         return id;
     }
 
-    public ComponentEntity setId(Long id) {
+    public StoreEntity setId(Long id) {
         this.id = id;
         return this;
     }
 
-    public String getName() {
-        return name;
+    public String getAddress() {
+        return address;
     }
 
-    public ComponentEntity setName(String name) {
-        this.name = name;
-        return this;
-    }
-
-    public Integer getCount() {
-        return count;
-    }
-
-    public ComponentEntity setCount(Integer count) {
-        this.count = count;
+    public StoreEntity setAddress(String address) {
+        this.address = address;
         return this;
     }
 
@@ -55,7 +42,7 @@ public class ComponentEntity implements Serializable {
         return bouquet;
     }
 
-    public ComponentEntity setBouquet(BouquetEntity bouquet) {
+    public StoreEntity setBouquet(BouquetEntity bouquet) {
         this.bouquet = bouquet;
         return this;
     }
@@ -68,7 +55,7 @@ public class ComponentEntity implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        ComponentEntity that = (ComponentEntity) o;
+        StoreEntity that = (StoreEntity) o;
         return Objects.equals(id, that.id);
     }
 
@@ -79,7 +66,7 @@ public class ComponentEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "ComponentEntity{"
+        return "StoreEntity{"
                 + "  id=" + id
                 + '}';
     }

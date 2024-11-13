@@ -1,7 +1,6 @@
 package ru.tbank.tflowers.bouquet.controller;
 
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +12,6 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import ru.tbank.tflowers.bouquet.db.BouquetEntity;
@@ -21,13 +19,15 @@ import ru.tbank.tflowers.bouquet.db.BouquetRepository;
 import ru.tbank.tflowers.bouquet.service.BouquetCacheService;
 import ru.tbank.tflowers.component.db.ComponentEntity;
 import ru.tbank.tflowers.component.db.ComponentRepository;
+import ru.tbank.tflowers.store.db.StoreEntity;
+import ru.tbank.tflowers.store.db.StoreRepository;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(
@@ -42,6 +42,16 @@ class BouquetControllerTest {
     private static final GenericContainer<?> REDIS_CONTAINER =
             new GenericContainer<>("redis:7.4.0-alpine")
                     .withExposedPorts(6379);
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private BouquetRepository bouquetRepository;
+    @Autowired
+    private ComponentRepository componentRepository;
+    @SpyBean
+    private BouquetCacheService bouquetCacheService;
+    @Autowired
+    private StoreRepository storeRepository;
 
     @BeforeAll
     static void beforeAll() {
@@ -64,18 +74,17 @@ class BouquetControllerTest {
         registry.add("spring.data.redis.port", () -> REDIS_CONTAINER.getMappedPort(6379).toString());
     }
 
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    private BouquetRepository bouquetRepository;
-    @Autowired
-    private ComponentRepository componentRepository;
-    @SpyBean
-    private BouquetCacheService bouquetCacheService;
-
     @BeforeEach
     void setUp() {
-        List<ComponentEntity> blueLagunaComponents = new ArrayList<>(List.of(
+        componentRepository.deleteAll();
+        bouquetRepository.deleteAll();
+        storeRepository.deleteAll();
+    }
+
+    @Test
+    void cacheTest() throws Exception {
+        // arrange
+        List<ComponentEntity> blueLagunaComponents = List.of(
                 new ComponentEntity()
                         .setId(1L)
                         .setName("Голубая хризантема")
@@ -88,14 +97,20 @@ class BouquetControllerTest {
                         .setId(3L)
                         .setName("Голубая лента")
                         .setCount(1)
-        ));
+        );
+        List<StoreEntity> blueLagunaStores = List.of(
+                new StoreEntity()
+                        .setId(1L)
+                        .setAddress("ул. Кудрявцева, д. 56")
+        );
         BouquetEntity blueLaguna = new BouquetEntity()
                 .setId(1L)
                 .setName("Голубая лагуна")
                 .setPrice(3500);
         blueLagunaComponents.forEach(blueLaguna::addComponent);
+        blueLagunaStores.forEach(blueLaguna::addStore);
 
-        List<ComponentEntity> redLagunaComponents = new ArrayList<>(List.of(
+        List<ComponentEntity> redLagunaComponents = List.of(
                 new ComponentEntity()
                         .setId(4L)
                         .setName("Красная роза")
@@ -108,7 +123,7 @@ class BouquetControllerTest {
                         .setId(6L)
                         .setName("Красная лента")
                         .setCount(1)
-        ));
+        );
         BouquetEntity redLaguna = new BouquetEntity()
                 .setId(2L)
                 .setName("Красная лагуна")
@@ -116,23 +131,13 @@ class BouquetControllerTest {
         redLagunaComponents.forEach(redLaguna::addComponent);
 
         bouquetRepository.saveAll(List.of(blueLaguna, redLaguna));
-    }
-
-    @AfterEach
-    void tearDown() {
-        componentRepository.deleteAll();
-        bouquetRepository.deleteAll();
-    }
-
-    @Test
-    void cacheTest() throws Exception {
         // act
         System.out.println("-----------------------------------------------------------------------");
-        String firstRequestBody = mockMvc.perform(MockMvcRequestBuilders.get("/bouquets"))
+        String firstRequestBody = mockMvc.perform(get("/bouquets"))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
         System.out.println("-----------------------------------------------------------------------");
-        String secondRequestBody = mockMvc.perform(MockMvcRequestBuilders.get("/bouquets"))
+        String secondRequestBody = mockMvc.perform(get("/bouquets"))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
         System.out.println("-----------------------------------------------------------------------");
@@ -148,5 +153,44 @@ class BouquetControllerTest {
                         + "\\n  - Красная упаковка x 2;"
                         + "\\n  - Красная лента x 1;\\n\",\"price\":3550}]");
         verify(bouquetCacheService, Mockito.times(1)).getBouquets();
+    }
+
+    @Test
+    void successGetStores() throws Exception {
+        // arrange
+        List<ComponentEntity> blueLagunaComponents = List.of(
+                new ComponentEntity()
+                        .setId(1L)
+                        .setName("Голубая хризантема")
+                        .setCount(11),
+                new ComponentEntity()
+                        .setId(2L)
+                        .setName("Голубая упаковка")
+                        .setCount(2),
+                new ComponentEntity()
+                        .setId(3L)
+                        .setName("Голубая лента")
+                        .setCount(1)
+        );
+        List<StoreEntity> blueLagunaStores = List.of(
+                new StoreEntity()
+                        .setId(1L)
+                        .setAddress("ул. Кудрявцева, д. 56")
+        );
+        BouquetEntity blueLaguna = new BouquetEntity()
+                .setId(1L)
+                .setName("Голубая лагуна")
+                .setPrice(3500);
+        blueLagunaComponents.forEach(blueLaguna::addComponent);
+        blueLagunaStores.forEach(blueLaguna::addStore);
+        bouquetRepository.save(blueLaguna);
+        // act
+        System.out.println("-----------------------------------------------------------------------");
+        String body = mockMvc.perform(get("/bouquets/stores/1"))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+        System.out.println("-----------------------------------------------------------------------");
+        // assert
+        assertThat(body).isEqualTo("[\"ул. Кудрявцева, д. 56\"]");
     }
 }
