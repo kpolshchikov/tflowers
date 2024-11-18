@@ -10,6 +10,7 @@ import ru.tbank.tflowers.bouquet.db.BouquetRepository;
 import ru.tbank.tflowers.component.db.ComponentEntity;
 import ru.tbank.tflowers.component.db.ComponentRepository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +47,8 @@ public class ServiceController {
         BouquetEntity blueLaguna = new BouquetEntity()
                 .setId(1L)
                 .setName("Голубая лагуна")
-                .setPrice(3500);
+                .setPrice(3500)
+                .setLastUpdated(LocalDate.now());
         blueLagunaComponents.forEach(blueLaguna::addComponent);
 
         List<ComponentEntity> redLagunaComponents = new ArrayList<>(List.of(
@@ -66,7 +68,8 @@ public class ServiceController {
         BouquetEntity redLaguna = new BouquetEntity()
                 .setId(2L)
                 .setName("Красная лагуна")
-                .setPrice(3550);
+                .setPrice(3550)
+                .setLastUpdated(LocalDate.now().minusDays(1));
         redLagunaComponents.forEach(redLaguna::addComponent);
 
         bouquetRepository.saveAll(List.of(blueLaguna, redLaguna));

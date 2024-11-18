@@ -23,7 +23,7 @@ import ru.tbank.tflowers.store.db.StoreEntity;
 import ru.tbank.tflowers.store.db.StoreRepository;
 
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -108,7 +108,7 @@ class BouquetControllerTest {
                 .setId(1L)
                 .setName("Голубая лагуна")
                 .setPrice(3500)
-                .setLastUpdated(LocalDateTime.now());
+                .setLastUpdated(LocalDate.now());
         blueLagunaComponents.forEach(blueLaguna::addComponent);
         blueLagunaStores.forEach(blueLaguna::addStore);
 
@@ -130,7 +130,7 @@ class BouquetControllerTest {
                 .setId(2L)
                 .setName("Красная лагуна")
                 .setPrice(3550)
-                .setLastUpdated(LocalDateTime.now().minusDays(1));
+                .setLastUpdated(LocalDate.now().minusDays(1));
         redLagunaComponents.forEach(redLaguna::addComponent);
 
         bouquetRepository.saveAll(List.of(blueLaguna, redLaguna));
@@ -180,7 +180,7 @@ class BouquetControllerTest {
                 .setId(1L)
                 .setName("Голубая лагуна")
                 .setPrice(3500)
-                .setLastUpdated(LocalDateTime.now());
+                .setLastUpdated(LocalDate.now());
         blueLagunaComponents.forEach(blueLaguna::addComponent);
         blueLagunaStores.forEach(blueLaguna::addStore);
         bouquetRepository.save(blueLaguna);

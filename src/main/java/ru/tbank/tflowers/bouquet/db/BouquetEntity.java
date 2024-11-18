@@ -1,5 +1,6 @@
 package ru.tbank.tflowers.bouquet.db;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,7 +12,7 @@ import ru.tbank.tflowers.component.db.ComponentEntity;
 import ru.tbank.tflowers.store.db.StoreEntity;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -23,8 +24,9 @@ public class BouquetEntity implements Serializable {
     private Long id;
     private String name;
     private Integer price;
+    @JsonIgnore
     @Column(name = "last_updated")
-    private transient LocalDateTime lastUpdated;
+    private LocalDate lastUpdated;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "bouquet", fetch = FetchType.EAGER)
     private List<ComponentEntity> components = new ArrayList<>();
@@ -97,11 +99,11 @@ public class BouquetEntity implements Serializable {
         store.setBouquet(null);
     }
 
-    public LocalDateTime getLastUpdated() {
+    public LocalDate getLastUpdated() {
         return lastUpdated;
     }
 
-    public BouquetEntity setLastUpdated(LocalDateTime lastUpdated) {
+    public BouquetEntity setLastUpdated(LocalDate lastUpdated) {
         this.lastUpdated = lastUpdated;
         return this;
     }

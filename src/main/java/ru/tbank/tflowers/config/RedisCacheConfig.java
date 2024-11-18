@@ -1,5 +1,6 @@
 package ru.tbank.tflowers.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -7,6 +8,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
 import java.util.Set;
@@ -21,8 +25,21 @@ public class RedisCacheConfig {
     public CacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
         return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(redisConnectionFactory)
                 .initialCacheNames(Set.of(BOUQUET_CACHE))
-                .withCacheConfiguration(BOUQUET_CACHE, RedisCacheConfiguration.defaultCacheConfig()
-                        .entryTtl(Duration.ofDays(1)))
+                .withCacheConfiguration(BOUQUET_CACHE,
+                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofDays(1))
+                                .serializeKeysWith(
+                                        RedisSerializationContext.SerializationPair.fromSerializer(
+                                                new StringRedisSerializer()))
+                                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(
+                                        getJsonSerializer())))
                 .build();
+    }
+
+    private GenericJackson2JsonRedisSerializer getJsonSerializer() {
+        return new GenericJackson2JsonRedisSerializer(getObjectMapper());
+    }
+
+    private ObjectMapper getObjectMapper() {
+        return new ObjectMapper();
     }
 }
