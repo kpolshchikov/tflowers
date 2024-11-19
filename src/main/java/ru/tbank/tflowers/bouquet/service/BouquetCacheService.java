@@ -6,7 +6,9 @@ import ru.tbank.tflowers.bouquet.db.BouquetEntity;
 import ru.tbank.tflowers.bouquet.db.BouquetRepository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ru.tbank.tflowers.config.RedisCacheConfig.BOUQUET_CACHE;
 
@@ -23,6 +25,6 @@ public class BouquetCacheService {
     public List<BouquetEntity> getBouquetsForToday() {
         return bouquetRepository.findAll().stream()
                 .filter(it -> it.getLastUpdated().equals(LocalDate.now()))
-                .toList();
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }
