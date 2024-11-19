@@ -1,6 +1,8 @@
 package ru.tbank.tflowers.bouquet.db;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,6 +21,10 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "bouquet")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.UUIDGenerator.class,
+        property = "@json_id"
+)
 public class BouquetEntity implements Serializable {
     @Id
     private Long id;

@@ -1,5 +1,7 @@
 package ru.tbank.tflowers.store.db;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -12,6 +14,10 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "store")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.UUIDGenerator.class,
+        property = "@json_id"
+)
 public class StoreEntity implements Serializable {
     @Id
     private Long id;
