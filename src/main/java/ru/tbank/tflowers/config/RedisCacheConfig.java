@@ -1,6 +1,5 @@
 package ru.tbank.tflowers.config;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -9,11 +8,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import ru.tbank.tflowers.bouquet.db.BouquetEntity;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Set;
 
 @Configuration
@@ -36,18 +38,13 @@ public class RedisCacheConfig {
                 .build();
     }
 
-    private GenericJackson2JsonRedisSerializer getJsonSerializer() {
-        return new GenericJackson2JsonRedisSerializer(getObjectMapper());
+    private RedisSerializer<List<BouquetEntity>> getJsonSerializer() {
+        ObjectMapper objectMapper = getObjectMapper();
+        return new Jackson2JsonRedisSerializer<>(objectMapper, objectMapper.getTypeFactory()
+                .constructCollectionType(List.class, BouquetEntity.class));
     }
 
     private ObjectMapper getObjectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        objectMapper.activateDefaultTyping(
-                objectMapper.getPolymorphicTypeValidator(),
-                ObjectMapper.DefaultTyping.NON_FINAL,
-                JsonTypeInfo.As.PROPERTY
-        );
-        return objectMapper;
+        return new ObjectMapper();
     }
 }
