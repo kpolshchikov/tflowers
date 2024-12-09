@@ -37,6 +37,7 @@ public class BouquetEntity implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "bouquet", fetch = FetchType.EAGER)
     private List<ComponentEntity> components = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "bouquet")
     private List<StoreEntity> stores = new ArrayList<>();
 
